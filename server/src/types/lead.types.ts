@@ -11,3 +11,9 @@ export interface CreateLeadInput {
     pain_point?: string;
     notes?: string;
 }
+
+export interface Lead extends CreateLeadInput {
+    id: string;
+    status: 'new' | 'contacted' | 'qualified' | 'rejected';
+    created_at: string;
+}
