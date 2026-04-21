@@ -22,3 +22,13 @@ export const createLead = async (leadData: CreateLeadInput) => {
 
     return newLead;
 }
+
+export const getAllLeads = async () => {
+    const leads = await prisma.lead.findMany({
+        orderBy: {
+            created_at: 'desc',
+        }
+    })
+
+    return leads;
+}
