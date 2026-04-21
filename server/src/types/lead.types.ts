@@ -1,3 +1,5 @@
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'rejected';
+
 export interface CreateLeadInput {
     full_name: string;
     email: string;
@@ -16,4 +18,8 @@ export interface Lead extends CreateLeadInput {
     id: string;
     status: 'new' | 'contacted' | 'qualified' | 'rejected';
     created_at: string;
+}
+
+export interface UpdateLeadStatusInput {
+    status: LeadStatus;
 }

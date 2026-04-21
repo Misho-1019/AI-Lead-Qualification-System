@@ -40,3 +40,20 @@ export const getLeadById = async (id: string) => {
 
     return lead;
 }
+
+export const updateLeadStatus = async (id: string, status: string) => {
+    const existingLead = await prisma.lead.findUnique({
+        where: { id },
+    })
+
+    if (!existingLead) {
+        return null;
+    }
+
+    const updatedLead = await prisma.lead.update({
+        where: { id },
+        data: { status },
+    })
+
+    return updatedLead;
+}

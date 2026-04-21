@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { createLead, getAllLeads, getLeadById } from "../services/lead.service";
-import { CreateLeadInput } from "../types/lead.types";
+import { createLead, getAllLeads, getLeadById, updateLeadStatus } from "../services/lead.service";
+import { CreateLeadInput, UpdateLeadStatusInput } from "../types/lead.types";
 
 export const createLeadController = async (req: Request, res: Response) => {
     const leadData = req.body as CreateLeadInput;
@@ -36,5 +36,23 @@ export const getLeadByIdController = async (req: Request, res: Response) => {
     return res.status(200).json({
         message: 'Lead fetched successfully',
         data: lead,
+    })
+}
+
+export const updateLeadStatusController = async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const { status } = req.body as UpdateLeadStatusInput;
+
+    const updatedLead = await updateLeadStatus(id, status);
+
+    if (!updatedLead) {
+        return res.status(404).json({
+            message: 'Lead not found',
+        })
+    }
+
+    return res.status(200).json({
+        message: 'Lead status updated successfully',
+        data: updatedLead,
     })
 }
