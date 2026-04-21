@@ -10,5 +10,21 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+model Lead {
+    id           String   @id @default(uuid())
+    full_name    String
+    email        String
+    company      String?
+    role         String?
+    website      String?
+    industry     String?
+    company_size String?
+    budget_range String?
+    source       String?
+    pain_point   String?
+    notes        String?
+    status       String   @default("new")
+    created_at   DateTime @default(now())
 }
