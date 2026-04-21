@@ -1,12 +1,22 @@
 import { CreateLeadInput, Lead } from "../types/lead.types";
+import prisma from "../utils/prisma";
 
-export const createLead = (leadData: CreateLeadInput): Lead => {
-    const newLead: Lead = {
-        id: crypto.randomUUID(),
-        status: 'new',
-        created_at: new Date().toISOString(),
-        ...leadData
-    }
+export const createLead = async (leadData: CreateLeadInput) => {
+    const newLead = await prisma.lead.create({
+        data: {
+            full_name: leadData.full_name,
+            email: leadData.email,
+            company: leadData.company,
+            role: leadData.role,
+            website: leadData.website,
+            industry: leadData.industry,
+            company_size: leadData.company_size,
+            budget_range: leadData.budget_range,
+            source: leadData.source,
+            pain_point: leadData.pain_point,
+            notes: leadData.notes,
+        }
+    })
 
     console.log('New lead received:', leadData);
 
