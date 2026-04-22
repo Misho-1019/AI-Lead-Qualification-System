@@ -1,5 +1,6 @@
 import { CreateLeadInput, Lead } from "../types/lead.types";
 import prisma from "../utils/prisma";
+import { triggerLeadAnalysisWorkflow } from "./n8n.service";
 
 export const createLead = async (leadData: CreateLeadInput) => {
     const newLead = await prisma.lead.create({
@@ -18,7 +19,7 @@ export const createLead = async (leadData: CreateLeadInput) => {
         }
     })
 
-    console.log('New lead received:', leadData);
+    await triggerLeadAnalysisWorkflow(newLead.id)
 
     return newLead;
 }
