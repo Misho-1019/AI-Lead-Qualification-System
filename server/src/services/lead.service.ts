@@ -36,6 +36,9 @@ export const getAllLeads = async () => {
 export const getLeadById = async (id: string) => {
     const lead = await prisma.lead.findUnique({
         where: { id },
+        include: {
+            analysis: true,
+        }
     })
 
     return lead;
