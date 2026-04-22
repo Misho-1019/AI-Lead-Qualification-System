@@ -26,3 +26,29 @@ export const createLeadAnalysis = async (
 
     return newAnalysis;
 }
+
+export const updateLeadAnalysis = async (
+    leadId: string,
+    analysisData: CreateLeadAnalysisInput
+) => {
+    const existingAnalysis = await prisma.leadAnalysis.findUnique({
+        where: { lead_id: leadId },
+    })
+
+    if (!existingAnalysis) return null;
+
+    const updatedAnalysis = await prisma.leadAnalysis.update({
+        where: { lead_id: leadId },
+        data: {
+            score: analysisData.score,
+            priority: analysisData.priority,
+            summary: analysisData.summary,
+            qualification_reason: analysisData.qualification_reason,
+            outreach_email_subject: analysisData.outreach_email_subject,
+            outreach_email_body: analysisData.outreach_email_body,
+            recommended_next_step: analysisData.recommended_next_step,
+        }
+    })
+
+    return updateLeadAnalysis;
+}
