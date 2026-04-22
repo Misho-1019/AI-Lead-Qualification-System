@@ -19,7 +19,7 @@ export const createLead = async (leadData: CreateLeadInput) => {
         }
     })
 
-    await triggerLeadAnalysisWorkflow(newLead.id)
+    await triggerLeadAnalysisWorkflow(newLead)
 
     return newLead;
 }
