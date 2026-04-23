@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type LeadAnalysis = {
     id: string;
     lead_id: string;
@@ -93,10 +95,11 @@ export default async function Home() {
                 ) : (
                     <div className="grid gap-5 md:grid-cols-2">
                         {leads.map((lead) => (
-                            <div
+                            <Link
                                 key={lead.id}
-                                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
-                            >
+                                    href={`/leads/${lead.id}`}
+                                    className="block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                                >
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
                                         <h2 className="text-xl font-semibold text-slate-900">
@@ -166,7 +169,7 @@ export default async function Home() {
                                         {lead.analysis?.summary ?? 'No analysis available yet.'}
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}
