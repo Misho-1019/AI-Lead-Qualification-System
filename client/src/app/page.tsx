@@ -1,3 +1,4 @@
+import AutoRefresh from "@/components/auto-refresh";
 import Link from "next/link";
 
 type LeadAnalysis = {
@@ -75,6 +76,8 @@ export default async function Home() {
 
     return (
         <main className="min-h-screen bg-slate-50">
+            <AutoRefresh />
+            
             <div className="mx-auto max-w-7xl px-6 py-10">
                 <div className="mb-8 flex items-start justify-between gap-4">
                     <div>
