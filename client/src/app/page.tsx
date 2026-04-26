@@ -146,7 +146,7 @@ export default async function Home() {
                                                     lead.analysis?.priority
                                                 )}`}
                                             >
-                                                {lead.analysis?.priority ?? 'N/A'}
+                                                {lead.analysis ? lead.analysis.priority : 'Analyzing'}
                                             </span>
                                         </div>
                                     </div>
@@ -172,7 +172,7 @@ export default async function Home() {
                                         AI Summary
                                     </p>
                                     <p className="mt-2 text-sm leading-6 text-slate-700">
-                                        {lead.analysis?.summary ?? 'No analysis available yet.'}
+                                        {lead.analysis ? lead.analysis.summary : 'AI is analyzing this lead...'}
                                     </p>
                                 </div>
                             </Link>
