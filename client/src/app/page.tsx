@@ -74,10 +74,27 @@ function getStatusClasses(status: string) {
 export default async function Home() {
     const leads = await getLeads();
 
+    const totalLeads = leads.length;
+
+    const analyzedLeads = leads.filter(lead => lead.analysis).length;
+
+    const highPriorityLeads = leads.filter(
+        lead => lead.analysis?.priority === 'high'
+    ).length;
+
+    const scoredLeads = leads.filter(
+        lead => typeof lead.analysis?.score === 'number'
+    )
+
+    const averageScore = scoredLeads.length > 0
+        ? Math.round(scoredLeads.reduce((sum, lead) => sum + (lead.analysis?.score ?? 0), 0) / scoredLeads.length)
+        : 0;
+    
+    
     return (
         <main className="min-h-screen bg-slate-50">
             <AutoRefresh />
-            
+
             <div className="mx-auto max-w-7xl px-6 py-10">
                 <div className="mb-8 flex items-start justify-between gap-4">
                     <div>
@@ -95,6 +112,28 @@ export default async function Home() {
                     >
                         + New Lead
                     </Link>
+                </div>
+
+                <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <p className="text-sm font-medium text-slate-500">Total Leads</p>
+                        <p className="mt-2 text-3xl font-bold text-slate-900">{totalLeads}</p>
+                    </div>
+                
+                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <p className="text-sm font-medium text-slate-500">Analyzed Leads</p>
+                        <p className="mt-2 text-3xl font-bold text-slate-900">{analyzedLeads}</p>
+                    </div>
+                
+                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <p className="text-sm font-medium text-slate-500">High Priority</p>
+                        <p className="mt-2 text-3xl font-bold text-slate-900">{highPriorityLeads}</p>
+                    </div>
+                
+                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <p className="text-sm font-medium text-slate-500">Average AI Score</p>
+                        <p className="mt-2 text-3xl font-bold text-slate-900">{averageScore}</p>
+                    </div>
                 </div>
 
                 {leads.length === 0 ? (
