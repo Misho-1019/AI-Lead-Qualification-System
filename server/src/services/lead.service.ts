@@ -61,3 +61,15 @@ export const updateLeadStatus = async (id: string, status: string) => {
 
     return updatedLead;
 }
+
+export const reanalyzeLead = async (id: string) => {
+    const lead = await prisma.lead.findUnique({
+        where: { id },
+    })
+
+    if (!lead) return null;
+
+    await triggerLeadAnalysisWorkflow(lead);
+
+    return lead;
+}

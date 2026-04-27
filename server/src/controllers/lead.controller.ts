@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createLead, getAllLeads, getLeadById, updateLeadStatus } from "../services/lead.service";
+import { createLead, getAllLeads, getLeadById, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
 import { CreateLeadInput, UpdateLeadStatusInput } from "../types/lead.types";
 
 export const createLeadController = async (req: Request, res: Response) => {
@@ -55,4 +55,18 @@ export const updateLeadStatusController = async (req: Request, res: Response) =>
         message: 'Lead status updated successfully',
         data: updatedLead,
     })
+}
+
+export const reanalyzeLeadController = async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+
+    const lead = await reanalyzeLead(id);
+
+    if (!lead) {
+        return res.status(404).json({
+            message: 'Lead not found'
+        });
+    }
+
+    return res.status(200).json({ message: 'Lead reanalysis triggered successfully' })
 }

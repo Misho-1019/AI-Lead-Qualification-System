@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StatusSelect from "@/components/status-select";
+import ReanalyzeButton from "@/components/reanalyze-button";
 
 type LeadAnalysis = {
     id: string;
@@ -71,6 +72,10 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                         <p className="mt-1 text-sm text-slate-500">
                             {lead.company ?? 'No company'} · {lead.industry ?? 'No industry'}
                         </p>
+
+                        <div className="mt-4">
+                            <ReanalyzeButton leadId={lead.id} />
+                        </div>
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
