@@ -40,7 +40,7 @@ export default function ReanalyzeButton({ leadId }: ReanalyzeButtonProps) {
             disabled={isLoading}
             className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-            {isLoading ? 'Re-running analysis...' : 'Re-run AI Analysis'}
+            {isLoading ? 'Re-analyzing...' : 'Re-run AI Analysis'}
         </button>
     );
 }

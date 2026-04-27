@@ -1,51 +1,7 @@
 import Link from "next/link";
 import StatusSelect from "@/components/status-select";
 import ReanalyzeButton from "@/components/reanalyze-button";
-
-type LeadAnalysis = {
-    id: string;
-    lead_id: string;
-    score: number;
-    priority: string;
-    summary: string;
-    qualification_reason: string;
-    outreach_email_subject: string;
-    outreach_email_body: string;
-    recommended_next_step: string;
-    created_at: string;
-}
-
-type Lead = {
-    id: string;
-    full_name: string;
-    email: string;
-    company: string | null;
-    role: string | null;
-    website: string | null;
-    industry: string | null;
-    company_size: string | null;
-    budget_range: string | null;
-    source: string | null;
-    pain_point: string | null;
-    notes: string | null;
-    status: string;
-    created_at: string;
-    analysis?: LeadAnalysis | null;
-}
-
-async function getLead(id: string): Promise<Lead> {
-    const response = await fetch(`http://localhost:3030/api/leads/${id}`, {
-        cache: 'no-store',
-    })
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch lead');
-    }
-
-    const result = await response.json();
-
-    return result.data;
-}
+import { getLead } from "@/lib/api";
 
 export default async function LeadDetailsPage({ params }: { params: Promise<{ id: string }>}) {
     const { id } = await params;

@@ -1,50 +1,7 @@
 import AutoRefresh from "@/components/auto-refresh";
 import LeadsDashboard from "@/components/leads-dashboard";
 import Link from "next/link";
-
-type LeadAnalysis = {
-    id: string;
-    lead_id: string;
-    score: number;
-    priority: string;
-    summary: string;
-    qualification_reason: string;
-    outreach_email_subject: string;
-    outreach_email_body: string;
-    recommended_next_step: string;
-    created_at: string;
-};
-
-type Lead = {
-    id: string;
-    full_name: string;
-    email: string;
-    company: string | null;
-    role: string | null;
-    website: string | null;
-    industry: string | null;
-    company_size: string | null;
-    budget_range: string | null;
-    source: string | null;
-    pain_point: string | null;
-    notes: string | null;
-    status: string;
-    created_at: string;
-    analysis?: LeadAnalysis | null;
-}
-
-async function getLeads(): Promise<Lead[]> {
-    const response = await fetch('http://localhost:3030/api/leads', {
-        cache: 'no-store',
-    })
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch leads')
-    }
-
-    const result = await response.json();
-    return result.data;
-}
+import { getLeads } from "@/lib/api";
 
 export default async function Home() {
     const leads = await getLeads();
