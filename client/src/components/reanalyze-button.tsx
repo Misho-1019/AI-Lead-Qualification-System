@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 type ReanalyzeButtonProps = {
     leadId: string;
@@ -23,9 +24,11 @@ export default function ReanalyzeButton({ leadId }: ReanalyzeButtonProps) {
                 throw new Error('Failed to trigger reanalysis')
             }
 
+            toast.success('AI reanalysis triggered')
             router.refresh();
         } catch (error) {
             console.error(error);
+            toast.error('Failed to trigger AI reanalysis')
         } finally {
             setIsLoading(false)
         }

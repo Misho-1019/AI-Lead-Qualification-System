@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function NewLeadPage() {
     const router = useRouter();
@@ -47,10 +48,12 @@ export default function NewLeadPage() {
                 throw new Error('Failed to create lead')
             }
 
+            toast.success('Lead created successfully')
             router.push('/');
             router.refresh()
         } catch {
             setError('Failed to create the lead. Please try again.')
+            toast.error('Failed to create lead')
         } finally {
             setIsSubmitting(false);
         }

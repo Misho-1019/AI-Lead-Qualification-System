@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 type StatusSelectProps = {
     leadId: string;
@@ -31,10 +32,12 @@ export default function StatusSelect({ leadId, initialStatus }: StatusSelectProp
                 throw new Error('Failed to update status');
             }
 
+            toast.success('Lead status updated')
             router.refresh();
         } catch (error) {
             console.error(error);
             setStatus(initialStatus)
+            toast.error('Failed to update lead status')
         } finally {
             setIsUpdating(false)
         }
