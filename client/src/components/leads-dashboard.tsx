@@ -113,6 +113,32 @@ export default function LeadsDashboard({ leads }: LeadsDashboardProps) {
 
     return (
         <>
+            <div className="mb-4 flex flex-wrap gap-2">
+                {[
+                    { label: 'All', value: 'all' },
+                    { label: 'New', value: 'new' },
+                    { label: 'Contacted', value: 'contacted' },
+                    { label: 'Qualified', value: 'qualified' },
+                    { label: 'Rejected', value: 'rejected' }
+                ].map((tab) => {
+                    const isActive = statusFilter === tab.value;
+            
+                    return (
+                        <button
+                            key={tab.value}
+                            onClick={() => setStatusFilter(tab.value)}
+                            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                                isActive
+                                    ? 'bg-slate-900 text-white'
+                                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
+            
             <div className="mb-6 grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-3">
                 <div>
                     <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -125,23 +151,6 @@ export default function LeadsDashboard({ leads }: LeadsDashboardProps) {
                         placeholder="Search by name, email, or company"
                         className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-slate-500"
                     />
-                </div>
-
-                <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Status
-                    </label>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500"
-                    >
-                        <option value="all">All statuses</option>
-                        <option value="new">New</option>
-                        <option value="contacted">Contacted</option>
-                        <option value="qualified">Qualified</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
                 </div>
 
                 <div>
