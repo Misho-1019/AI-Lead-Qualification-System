@@ -50,7 +50,7 @@ export default function NewLeadPage() {
             router.push('/');
             router.refresh()
         } catch (err) {
-            setError('Something went wrong while creating the lead.')
+            setError('Failed to create the lead. Please try again.')
         } finally {
             setIsSubmitting(false);
         }
@@ -76,6 +76,10 @@ export default function NewLeadPage() {
                         <p className="mt-2 text-slate-600">
                             Add a new inbound lead and trigger AI qualification automatically.
                         </p>
+
+                        <p className="mt-2 text-sm text-slate-500">
+                            After submission, the lead will appear on the dashboard and AI analysis will be generated automatically.
+                        </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
@@ -89,9 +93,10 @@ export default function NewLeadPage() {
                                     name="full_name"
                                     value={formData.full_name}
                                     onChange={handleChange}
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="John Doe"
                                     required
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -104,9 +109,10 @@ export default function NewLeadPage() {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="john@example.com"
                                     required
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -119,8 +125,9 @@ export default function NewLeadPage() {
                                     name="company"
                                     value={formData.company}
                                     onChange={handleChange}
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="Acme Inc."
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -133,8 +140,9 @@ export default function NewLeadPage() {
                                     name="industry"
                                     value={formData.industry}
                                     onChange={handleChange}
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="SaaS"
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -147,8 +155,9 @@ export default function NewLeadPage() {
                                     name="company_size"
                                     value={formData.company_size}
                                     onChange={handleChange}
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="50-200"
+                                    disabled={isSubmitting}
                                 />
                             </div>
 
@@ -161,8 +170,9 @@ export default function NewLeadPage() {
                                     name="budget_range"
                                     value={formData.budget_range}
                                     onChange={handleChange}
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="10k-20k"
+                                    disabled={isSubmitting}
                                 />
                             </div>
                         </div>
@@ -175,8 +185,9 @@ export default function NewLeadPage() {
                                 name="pain_point"
                                 value={formData.pain_point}
                                 onChange={handleChange}
-                                className="min-h-[140px] w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-500"
+                                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                 placeholder="Describe the lead's main challenge..."
+                                disabled={isSubmitting}
                             />
                         </div>
 
@@ -191,7 +202,7 @@ export default function NewLeadPage() {
                             disabled={isSubmitting}
                             className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            {isSubmitting ? 'Creating...' : 'Create Lead'}
+                            {isSubmitting ? 'Creating lead...' : 'Create Lead'}
                         </button>
                     </form>
                 </div>
