@@ -49,7 +49,7 @@ export default function NewLeadPage() {
 
             router.push('/');
             router.refresh()
-        } catch (err) {
+        } catch {
             setError('Failed to create the lead. Please try again.')
         } finally {
             setIsSubmitting(false);

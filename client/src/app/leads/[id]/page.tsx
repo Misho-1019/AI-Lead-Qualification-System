@@ -1,4 +1,5 @@
 import Link from "next/link";
+import StatusSelect from "@/components/status-select";
 
 type LeadAnalysis = {
     id: string;
@@ -74,12 +75,7 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
 
                     <div className="grid gap-4 md:grid-cols-2">
                         <div className="rounded-xl bg-slate-50 p-4">
-                            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                                Status
-                            </p>
-                            <p className="mt-2 text-lg font-semibold text-slate-900">
-                                {lead.status}
-                            </p>
+                            <StatusSelect leadId={lead.id} initialStatus={lead.status} />
                         </div>
 
                         <div className="rounded-xl bg-slate-50 p-4">
