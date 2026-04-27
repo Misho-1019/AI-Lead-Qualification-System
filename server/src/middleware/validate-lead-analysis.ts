@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 export const validateLeadAnalysis = (req: Request, res: Response, next: NextFunction) => {
-    const { score, priority, summary, qualification_reason, outreach_email_subject, outreach_email_body, recommend_next_step } = req.body;
+    const { score, priority, summary, qualification_reason, outreach_email_subject, outreach_email_body, recommended_next_step } = req.body;
 
     if (typeof score !== 'number' || score < 0 || score > 100) {
         return res.status(400).json({ message: 'score must be a number between 0 and 100' })
@@ -27,7 +27,7 @@ export const validateLeadAnalysis = (req: Request, res: Response, next: NextFunc
         return res.status(400).json({ message: 'outreach_email_body is required and must be a non-empty string' })
     }
 
-    if (!recommend_next_step || typeof recommend_next_step !== 'string' || !recommend_next_step.trim()) {
+    if (!recommended_next_step || typeof recommended_next_step !== 'string' || !recommended_next_step.trim()) {
         return res.status(400).json({ message: 'recommended_next_step is required and must be a non-empty string' })
     }
 

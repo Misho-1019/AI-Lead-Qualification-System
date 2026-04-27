@@ -51,7 +51,7 @@ export const updateLeadAnalysis = async (
         }
     })
 
-    return updateLeadAnalysis;
+    return updatedAnalysis;
 }
 
 export const saveLeadAnalysisFromCallback = async ( callbackData: LeadAnalysisCallbackInput ) => {
