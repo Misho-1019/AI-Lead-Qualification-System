@@ -25,6 +25,22 @@ export async function getLeads(): Promise<Lead[]> {
     return result.data;
 }
 
+export const createLead = async (leadData: Record<string, string>) => {
+    const response = await fetch(`${API_BASE_URL}/api/leads`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to create lead');
+    }
+
+    return response.json();
+};
+
 export async function getLead(id: string): Promise<Lead> {
     const response = await fetch(`${API_BASE_URL}/api/leads/${id}`, {
         cache: 'no-store'

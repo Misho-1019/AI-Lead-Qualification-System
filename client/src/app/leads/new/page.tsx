@@ -1,5 +1,6 @@
 'use client'
 
+import { createLead } from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -12,11 +13,15 @@ export default function NewLeadPage() {
         full_name: '',
         email: '',
         company: '',
+        role: '',
+        website: '',
         industry: '',
         company_size: '',
         budget_range: '',
-        pain_point: ''
-    })
+        source: '',
+        pain_point: '',
+        notes: ''
+    });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -27,8 +32,8 @@ export default function NewLeadPage() {
         setFormData(prev => ({
             ...prev,
             [name]: value,
-        }))
-    }
+        }));
+    };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -36,28 +41,18 @@ export default function NewLeadPage() {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3030/api/leads', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
+            await createLead(formData);
 
-            if (!response.ok) {
-                throw new Error('Failed to create lead')
-            }
-
-            toast.success('Lead created successfully')
+            toast.success('Lead created successfully');
             router.push('/');
-            router.refresh()
+            router.refresh();
         } catch {
-            setError('Failed to create the lead. Please try again.')
-            toast.error('Failed to create lead')
+            setError('Failed to create the lead. Please try again.');
+            toast.error('Failed to create lead');
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     return (
         <main className="min-h-screen bg-slate-50">
@@ -87,6 +82,7 @@ export default function NewLeadPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="grid gap-5 md:grid-cols-2">
+
                             <div>
                                 <label className="mb-2 block text-sm font-medium text-slate-700">
                                     Full Name
@@ -136,6 +132,21 @@ export default function NewLeadPage() {
 
                             <div>
                                 <label className="mb-2 block text-sm font-medium text-slate-700">
+                                    Role
+                                </label>
+                                <input
+                                    type="text"
+                                    name="role"
+                                    value={formData.role}
+                                    onChange={handleChange}
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
+                                    placeholder="Founder"
+                                    disabled={isSubmitting}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">
                                     Industry
                                 </label>
                                 <input
@@ -145,6 +156,21 @@ export default function NewLeadPage() {
                                     onChange={handleChange}
                                     className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                     placeholder="SaaS"
+                                    disabled={isSubmitting}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">
+                                    Website
+                                </label>
+                                <input
+                                    type="url"
+                                    name="website"
+                                    value={formData.website}
+                                    onChange={handleChange}
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
+                                    placeholder="https://company.com"
                                     disabled={isSubmitting}
                                 />
                             </div>
@@ -178,6 +204,22 @@ export default function NewLeadPage() {
                                     disabled={isSubmitting}
                                 />
                             </div>
+
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-slate-700">
+                                    Source
+                                </label>
+                                <input
+                                    type="text"
+                                    name="source"
+                                    value={formData.source}
+                                    onChange={handleChange}
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
+                                    placeholder="Website form"
+                                    disabled={isSubmitting}
+                                />
+                            </div>
+
                         </div>
 
                         <div>
@@ -190,6 +232,22 @@ export default function NewLeadPage() {
                                 onChange={handleChange}
                                 className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
                                 placeholder="Describe the lead's main challenge..."
+                                rows={4}
+                                disabled={isSubmitting}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-700">
+                                Notes
+                            </label>
+                            <textarea
+                                name="notes"
+                                value={formData.notes}
+                                onChange={handleChange}
+                                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-70"
+                                placeholder="Any extra context about the lead..."
+                                rows={4}
                                 disabled={isSubmitting}
                             />
                         </div>
