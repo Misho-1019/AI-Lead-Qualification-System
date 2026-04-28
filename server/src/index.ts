@@ -8,6 +8,7 @@ import leadRoute from "./routes/lead.route";
 import internalRoutes from "./routes/internal.route";
 import { errorHandler } from "./middleware/errorHandler";
 import helmet from "helmet";
+import prisma from "./utils/prisma";
 
 const requiredEnvVars = ['DATABASE_URL', 'N8N_WEBHOOK_URL', 'INTERNAL_API_KEY', 'FRONTEND_URL'];
 
@@ -34,4 +35,24 @@ app.use('/api/internal', internalRoutes)
 
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`))
+const server = app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`))
+
+const shutdown = async () => {
+    console.log('Shutting down server...');
+    
+    server.close(async () => {
+        console.log('HTTP server closed');
+
+        try {
+            await prisma.$disconnect();
+            console.log('Database disconnect');
+        } catch (error) {
+            console.error('Error during Prisma disconnect', error);
+        }
+
+        process.exit(0)
+    })
+}
+
+process.on('SIGINT', shutdown)
+process.on('SIGTERM', shutdown)
