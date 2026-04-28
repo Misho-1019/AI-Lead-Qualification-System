@@ -6,7 +6,7 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.error(err);
+    console.error(`[${req.method}] ${req.originalUrl}`, err);
 
     return res.status(500).json({
         message: 'Internal server error',
