@@ -14,8 +14,8 @@ export const createLeadController = async (req: Request, res: Response) => {
 }
 
 export const getAllLeadsController = async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
 
     const leads = await getAllLeads(page, limit);
 
