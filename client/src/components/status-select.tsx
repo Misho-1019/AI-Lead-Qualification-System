@@ -1,5 +1,6 @@
 'use client'
 
+import { updateLeadStatus } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -16,28 +17,11 @@ export default function StatusSelect({ leadId, initialStatus }: StatusSelectProp
     const [isUpdating, setIsUpdating] = useState(false);
 
     const handleChange = async (newStatus: string) => {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-        if (!API_BASE_URL) {
-            toast.error('API URL not configured');
-            return;
-        }
-
         setStatus(newStatus)
         setIsUpdating(true);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/leads/${leadId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ status: newStatus })
-            })
-
-            if (!response.ok) {
-                throw new Error('Failed to update status');
-            }
+            await updateLeadStatus(leadId, newStatus)
 
             toast.success('Lead status updated')
             router.refresh();
