@@ -12,6 +12,12 @@ export const createLeadAnalysis = async (
 
     if (!existingLead) return null;
 
+    const existingAnalysis = await prisma.leadAnalysis.findUnique({
+        where: { lead_id: leadId },
+    })
+
+    if (existingAnalysis) return null;
+
     const newAnalysis = await prisma.leadAnalysis.create({
         data: {
             lead_id: leadId,
