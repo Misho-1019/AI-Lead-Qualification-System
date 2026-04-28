@@ -9,7 +9,7 @@ export const createLeadAnalysisController = async (req: Request, res: Response) 
     const newAnalysis = await createLeadAnalysis(id, analysisData)
 
     if (!newAnalysis) {
-        return res.status(404).json({ message: 'Lead not found' })
+        return res.status(404).json({ message: 'Lead not found or analysis already exists' })
     }
 
     return res.status(201).json({ message: 'Lead analysis created successfully', data: newAnalysis })

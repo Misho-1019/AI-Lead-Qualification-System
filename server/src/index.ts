@@ -7,6 +7,7 @@ import healthRoute from "./routes/health.route";
 import leadRoute from "./routes/lead.route";
 import internalRoutes from "./routes/internal.route";
 import { errorHandler } from "./middleware/errorHandler";
+import helmet from "helmet";
 
 const requiredEnvVars = ['DATABASE_URL', 'N8N_WEBHOOK_URL', 'INTERNAL_API_KEY', 'FRONTEND_URL'];
 
@@ -19,12 +20,13 @@ for (const envVar of requiredEnvVars) {
 const app = express();
 const PORT: number = Number(process.env.PORT) || 3030;
 
+app.use(express.json());
+app.use(helmet())
 app.use(
     cors({
         origin: process.env.FRONTEND_URL,
     })
 );
-app.use(express.json());
 
 app.use('/', healthRoute);
 app.use('/api/leads', leadRoute)
