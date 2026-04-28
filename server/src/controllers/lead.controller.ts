@@ -13,12 +13,17 @@ export const createLeadController = async (req: Request, res: Response) => {
     })
 }
 
-export const getAllLeadsController = async (_req: Request, res: Response) => {
-    const leads = await getAllLeads();
+export const getAllLeadsController = async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const leads = await getAllLeads(page, limit);
 
     return res.status(200).json({
         message: 'Leads fetched successfully',
         data: leads,
+        page,
+        limit
     })
 }
 
