@@ -13,10 +13,17 @@ export default function ReanalyzeButton({ leadId }: ReanalyzeButtonProps) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleClick = async () => {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+        if (!API_BASE_URL) {
+            toast.error('API URL not configured');
+            return;
+        }
+
         setIsLoading(true);
         
         try {
-            const response = await fetch(`http://localhost:3030/api/leads/${leadId}/reanalyze`, {
+            const response = await fetch(`${API_BASE_URL}/api/leads/${leadId}/reanalyze`, {
                 method: 'POST'
             })
 

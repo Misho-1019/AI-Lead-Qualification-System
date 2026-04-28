@@ -1,6 +1,16 @@
 import { Lead } from "@/types/lead";
 
-const API_BASE_URL = 'http://localhost:3030';
+const getApiBaseUrl = () => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    if (!apiBaseUrl) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
+
+    return apiBaseUrl;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export async function getLeads(): Promise<Lead[]> {
     const response = await fetch(`${API_BASE_URL}/api/leads`, {

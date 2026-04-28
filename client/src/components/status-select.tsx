@@ -16,11 +16,18 @@ export default function StatusSelect({ leadId, initialStatus }: StatusSelectProp
     const [isUpdating, setIsUpdating] = useState(false);
 
     const handleChange = async (newStatus: string) => {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+        if (!API_BASE_URL) {
+            toast.error('API URL not configured');
+            return;
+        }
+
         setStatus(newStatus)
         setIsUpdating(true);
 
         try {
-            const response = await fetch(`http://localhost:3030/api/leads/${leadId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/leads/${leadId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
