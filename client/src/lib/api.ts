@@ -1,4 +1,4 @@
-import { Lead } from "@/types/lead";
+import { Lead, LeadStats } from "@/types/lead";
 
 const getApiBaseUrl = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -22,6 +22,19 @@ export async function getLeads(): Promise<Lead[]> {
     }
 
     const result = await response.json();
+    return result.data.leads;
+}
+
+export async function getLeadStats(): Promise<LeadStats> {
+    const response = await fetch(`${API_BASE_URL}/api/leads/stats`, {
+        cache: 'no-store'
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch lead stats');
+    }
+
+    const result = await response.json();
     return result.data;
 }
 
@@ -41,10 +54,14 @@ export const createLead = async (leadData: Record<string, string>) => {
     return response.json();
 };
 
-export async function getLead(id: string): Promise<Lead> {
+export async function getLead(id: string): Promise<Lead | null> {
     const response = await fetch(`${API_BASE_URL}/api/leads/${id}`, {
         cache: 'no-store'
     });
+
+    if (response.status === 404) {
+        return null;
+    }
 
     if (!response.ok) {
         throw new Error('Failed to fetch lead');

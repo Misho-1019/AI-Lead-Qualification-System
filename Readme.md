@@ -185,10 +185,15 @@ npm run dev
 
 ### 3️⃣ Environment Variables
 
+> Copy the example files (`server/.env.example` → `server/.env`, `client/.env.example` → `client/.env.local`) and fill in the values.
+
 #### Backend `.env`
 
 ```env
+# Pooled connection string for the app (e.g. Neon: ...-pooler.aws.neon.tech)
 DATABASE_URL=
+# Direct connection string for Prisma CLI (migrations)
+DIRECT_URL=
 PORT=3030
 N8N_WEBHOOK_URL=
 INTERNAL_API_KEY=

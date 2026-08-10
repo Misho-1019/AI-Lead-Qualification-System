@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import StatusSelect from "@/components/status-select";
 import ReanalyzeButton from "@/components/reanalyze-button";
 import { getLead } from "@/lib/api";
@@ -6,6 +7,10 @@ import { getLead } from "@/lib/api";
 export default async function LeadDetailsPage({ params }: { params: Promise<{ id: string }>}) {
     const { id } = await params;
     const lead = await getLead(id);
+
+    if (!lead) {
+        notFound();
+    }
 
     return (
         <main className="min-h-screen bg-slate-50">

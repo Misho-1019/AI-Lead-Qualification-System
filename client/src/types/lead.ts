@@ -11,6 +11,13 @@ export type LeadAnalysis = {
     created_at: string;
 };
 
+export type LeadStats = {
+    total: number;
+    analyzed: number;
+    highPriority: number;
+    averageScore: number;
+};
+
 export type Lead = {
     id: string;
     full_name: string;

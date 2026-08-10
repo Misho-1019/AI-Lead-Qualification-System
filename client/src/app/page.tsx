@@ -1,26 +1,18 @@
 import AutoRefresh from "@/components/auto-refresh";
 import LeadsDashboard from "@/components/leads-dashboard";
 import Link from "next/link";
-import { getLeads } from "@/lib/api";
+import { getLeadStats, getLeads } from "@/lib/api";
 
 export default async function Home() {
-    const leads = await getLeads();
+    const [leads, stats] = await Promise.all([getLeads(), getLeadStats()]);
 
-    const totalLeads = leads.length;
+    const totalLeads = stats.total;
 
-    const analyzedLeads = leads.filter(lead => lead.analysis).length;
+    const analyzedLeads = stats.analyzed;
 
-    const highPriorityLeads = leads.filter(
-        lead => lead.analysis?.priority === 'high'
-    ).length;
+    const highPriorityLeads = stats.highPriority;
 
-    const scoredLeads = leads.filter(
-        lead => typeof lead.analysis?.score === 'number'
-    )
-
-    const averageScore = scoredLeads.length > 0
-        ? Math.round(scoredLeads.reduce((sum, lead) => sum + (lead.analysis?.score ?? 0), 0) / scoredLeads.length)
-        : 0;
+    const averageScore = stats.averageScore;
     
     
     return (
