@@ -29,7 +29,7 @@ Point the app at Neon Postgres and load the schema there.
    const adapter = new PrismaNeon({ connectionString });
    ```
 
-4. `prisma.config.ts`: `url: env("DIRECT_URL")` (CLI migrations use the direct connection).
+4. `prisma.config.ts`: datasource URL resolves `DIRECT_URL || DATABASE_URL` (fallback so `postinstall: prisma generate` works on hosts like Render that only set `DATABASE_URL`).
 
 5. Apply schema: `npm run db:deploy` (uses committed FIX-01 migration).
 
