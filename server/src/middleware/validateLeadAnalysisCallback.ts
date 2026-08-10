@@ -31,5 +31,9 @@ export const validateLeadAnalysisCallback = (
         });
     }
 
+    if (score < 0 || score > 100) {
+        return res.status(400).json({ message: 'score must be a number between 0 and 100' })
+    }
+
     next();
 };

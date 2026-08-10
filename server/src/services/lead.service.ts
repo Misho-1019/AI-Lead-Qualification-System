@@ -27,15 +27,37 @@ export const createLead = async (leadData: CreateLeadInput) => {
 export const getAllLeads = async (page: number, limit: number) => {
     const skip = (page - 1) * limit;
 
-    const leads = await prisma.lead.findMany({
-        orderBy: {
-            created_at: 'desc',
-        },
-        skip,
-        take: limit,
-    })
+    const [leads, total] = await Promise.all([
+        prisma.lead.findMany({
+            orderBy: {
+                created_at: 'desc',
+            },
+            include: {
+                analysis: true,
+            },
+            skip,
+            take: limit,
+        }),
+        prisma.lead.count(),
+    ])
 
-    return leads;
+    return { leads, total };
+}
+
+export const getLeadStats = async () => {
+    const [total, analyzed, highPriority, averageScore] = await Promise.all([
+        prisma.lead.count(),
+        prisma.leadAnalysis.count(),
+        prisma.leadAnalysis.count({ where: { priority: 'high' } }),
+        prisma.leadAnalysis.aggregate({ _avg: { score: true } }),
+    ]);
+
+    return {
+        total,
+        analyzed,
+        highPriority,
+        averageScore: Math.round(averageScore._avg.score ?? 0),
+    };
 }
 
 export const getLeadById = async (id: string) => {

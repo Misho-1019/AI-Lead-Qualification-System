@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 
 export const verifyInternalApiKey = (
     req: Request,
@@ -13,7 +14,17 @@ export const verifyInternalApiKey = (
         return res.status(500).json({ message: 'Internal server error' });
     }
 
-    if (!providedApiKey || providedApiKey !== expectedApiKey) {
+    if (!providedApiKey) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const expectedBuffer = Buffer.from(expectedApiKey);
+    const providedBuffer = Buffer.from(providedApiKey);
+
+    if (
+        expectedBuffer.length !== providedBuffer.length ||
+        !crypto.timingSafeEqual(expectedBuffer, providedBuffer)
+    ) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 

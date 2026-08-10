@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createLead, getAllLeads, getLeadById, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
+import { createLead, getAllLeads, getLeadById, getLeadStats, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
 import { CreateLeadInput, UpdateLeadStatusInput } from "../types/lead.types";
 
 export const createLeadController = async (req: Request, res: Response) => {
@@ -17,13 +17,22 @@ export const getAllLeadsController = async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
 
-    const leads = await getAllLeads(page, limit);
+    const { leads, total } = await getAllLeads(page, limit);
 
     return res.status(200).json({
         message: 'Leads fetched successfully',
-        data: leads,
+        data: { leads, total },
         page,
         limit
+    })
+}
+
+export const getLeadStatsController = async (req: Request, res: Response) => {
+    const stats = await getLeadStats();
+
+    return res.status(200).json({
+        message: 'Lead stats fetched successfully',
+        data: stats,
     })
 }
 
