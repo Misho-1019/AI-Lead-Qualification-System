@@ -28,9 +28,10 @@ export default function CopyEmailButton({ subject, body }: CopyEmailButtonProps)
         <button
             onClick={handleCopy}
             disabled={disabled}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
         >
-            {copied ? 'Copied ✓' : 'Copy email'}
+            <span className="material-symbols-outlined text-base">content_copy</span>
+            {copied ? 'Copied' : 'Copy email'}
         </button>
     );
 }

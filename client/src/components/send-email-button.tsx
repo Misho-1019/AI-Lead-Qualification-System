@@ -40,8 +40,9 @@ export default function SendEmailButton({ leadId, leadEmail, hasAnalysis }: Send
         <button
             onClick={handleSend}
             disabled={isSending || !hasAnalysis}
-            className="gradient-primary rounded-full px-4 py-2 text-sm font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+            className="gradient-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
+            <span className="material-symbols-outlined text-base">send</span>
             {isSending ? 'Sending...' : 'Send email'}
         </button>
     );

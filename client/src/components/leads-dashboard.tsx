@@ -134,6 +134,7 @@ function LeadCard({ lead }: { lead: Lead }) {
                 <ScoreRing score={score} size={score == null ? 72 : 80} color={priorityMeta.color} glow={priorityMeta.glow} />
                 <div className="flex-1">
                     <div className="mb-2 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base text-primary">auto_awesome</span>
                         <span className={`text-xs font-black uppercase tracking-widest ${priorityMeta.text}`}>
                             AI Insight
                         </span>
@@ -172,13 +173,14 @@ function LeadCard({ lead }: { lead: Lead }) {
             </div>
 
             <div
-                className={`relative mt-6 w-full rounded-xl py-3 text-center text-sm font-bold transition-all active:scale-[0.98] ${
+                className={`relative mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-center text-sm font-bold transition-all active:scale-[0.98] ${
                     priority === 'high'
                         ? 'bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.3)] hover:bg-rose-600'
                         : 'bg-primary text-white shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:bg-primary/90'
                 }`}
             >
-                View Details →
+                View Details
+                <span className="material-symbols-outlined text-base">arrow_forward</span>
             </div>
         </Link>
     );

@@ -39,7 +39,8 @@ export default async function Home() {
                         href="/leads/new"
                         className="gradient-primary inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-transform hover:scale-105 active:scale-95"
                     >
-                        + New Lead
+                        <span className="material-symbols-outlined text-base">add</span>
+                        New Lead
                     </Link>
                 </header>
 

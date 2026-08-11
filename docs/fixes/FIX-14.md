@@ -27,4 +27,16 @@ Stitch project: `16152113392600487045` · Design system: `assets/688600220463202
 
 **Verified:** `tsc` ✅ · `eslint` ✅ · `next build` ✅ · browser QA (all sections, KPIs, email content render).
 
-## Screen 3 — New Lead (pending)
+## Screen 3 — New Lead ✅ DONE
+
+**Source:** Stitch "Create New Lead". Palette normalized to dashboard tokens; industry/size/budget kept as free-text inputs (API stores strings).
+
+**Files:** `leads/new/page.tsx` (client — glass card, gradient-text headline, info note, field icons, micro-labels, dark glass inputs, "AI will analyze this" badge, Pain Point/Notes textareas, gradient "Create Lead" pill, error banner, disabled states).
+
+**Verified:** `tsc` ✅ · `eslint` ✅ · `next build` ✅ · browser QA (all fields + icons render, inputs accept values).
+
+## Global icons ✅ DONE
+
+Material Symbols Outlined loaded in `layout.tsx` (`<link>`, eslint-disabled), `.material-symbols-outlined` utility in `globals.css`. Icons added to dashboard (+ New Lead `add`, AI Insight `auto_awesome`, View Details `arrow_forward`), details (arrow_back, autorenew, local_fire_department, warning, report_problem, psychology, check_circle, play_arrow, mail, content_copy, send), and new-lead form.
+
+**Verified:** browser QA across all three screens (icons render).
