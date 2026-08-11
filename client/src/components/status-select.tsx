@@ -10,6 +10,13 @@ type StatusSelectProps = {
     initialStatus: string;
 }
 
+const STATUS_STYLES: Record<string, { select: string; dot: string }> = {
+    new: { select: 'border-slate-500/20 bg-slate-500/10 text-slate-400', dot: 'bg-slate-400' },
+    contacted: { select: 'border-blue-500/20 bg-blue-500/10 text-blue-400', dot: 'bg-blue-400' },
+    qualified: { select: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400', dot: 'bg-emerald-400' },
+    rejected: { select: 'border-rose-500/20 bg-rose-500/10 text-rose-400', dot: 'bg-rose-400' },
+};
+
 export default function StatusSelect({ leadId, initialStatus }: StatusSelectProps) {
     const router = useRouter();
 
@@ -34,17 +41,19 @@ export default function StatusSelect({ leadId, initialStatus }: StatusSelectProp
         }
     }
 
-    return (
-        <div>
-            <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Status
-            </label>
+    const style = STATUS_STYLES[status] ?? STATUS_STYLES.new;
 
+    return (
+        <div className="relative">
+            <label className="sr-only">Status</label>
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2">
+                <span className={`block h-2 w-2 animate-pulse rounded-full ${style.dot}`} />
+            </span>
             <select
                 value={status}
                 onChange={(e) => handleChange(e.target.value)}
                 disabled={isUpdating}
-                className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-slate-500 disabled:cursor-not-allowed disabled:bg-slate-100"
+                className={`w-full appearance-none rounded-full border py-2.5 pl-8 pr-4 text-sm font-bold outline-none backdrop-blur-sm transition focus:border-primary/50 focus:ring-1 focus:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-60 ${style.select} [&>option]:bg-surface-container`}
             >
                 <option value="new">New</option>
                 <option value="contacted">Contacted</option>
