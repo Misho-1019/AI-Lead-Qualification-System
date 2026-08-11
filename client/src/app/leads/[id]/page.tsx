@@ -56,7 +56,8 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                         href="/"
                         className="flex items-center gap-2 text-sm font-medium text-on-surface/60 transition-colors hover:text-primary"
                     >
-                        ← Back to dashboard
+                        <span className="material-symbols-outlined text-lg">arrow_back</span>
+                        Back to dashboard
                     </Link>
                 </nav>
 
@@ -76,6 +77,9 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                                             : 'font-semibold text-on-surface/80'
                                     }
                                 >
+                                    {priority === 'high' && (
+                                        <span className="material-symbols-outlined text-base">local_fire_department</span>
+                                    )}
                                     {companyLine}
                                 </span>
                             </div>
@@ -100,7 +104,10 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                         <span className="text-[10px] font-black uppercase tracking-widest text-on-surface/40">
                             Priority
                         </span>
-                        <span className={`mt-auto w-fit rounded-full border px-3 py-1 text-sm font-bold ${priorityMeta.chip}`}>
+                        <span className={`mt-auto flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-bold ${priorityMeta.chip}`}>
+                            {priority === 'high' && (
+                                <span className="material-symbols-outlined text-base">warning</span>
+                            )}
                             {priorityMeta.label}
                         </span>
                     </div>
@@ -126,7 +133,8 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
 
                 <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="glass-card rounded-3xl p-6">
-                        <h2 className="border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                        <h2 className="flex items-center gap-2 border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                            <span className="material-symbols-outlined text-lg">report_problem</span>
                             Pain Point
                         </h2>
                         <p className="mt-3 text-base leading-relaxed text-on-surface">
@@ -136,7 +144,8 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
 
                     <div className="glass-card rounded-3xl p-6 md:col-span-2">
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-xs font-bold uppercase tracking-wider text-primary">
+                            <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                                <span className="material-symbols-outlined text-lg">psychology</span>
                                 AI Summary
                             </h2>
                             <span className="rounded border border-primary/30 bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
@@ -149,7 +158,8 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                     </div>
 
                     <div className="glass-card rounded-3xl p-6">
-                        <h2 className="border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                        <h2 className="flex items-center gap-2 border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                            <span className="material-symbols-outlined text-lg">check_circle</span>
                             Qualification Reason
                         </h2>
                         <p className="mt-3 text-base leading-relaxed text-on-surface/80">
@@ -158,7 +168,8 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                     </div>
 
                     <div className="glass-card rounded-3xl p-6 md:col-span-2">
-                        <h2 className="border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                        <h2 className="flex items-center gap-2 border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                            <span className="material-symbols-outlined text-lg">play_arrow</span>
                             Recommended Next Step
                         </h2>
                         <p className="mt-3 text-base leading-relaxed text-on-surface">
@@ -168,7 +179,8 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
 
                     <div className="glass-card rounded-3xl p-6 md:col-span-3">
                         <div className="mb-4 flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-                            <h2 className="text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                            <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-on-surface/60">
+                                <span className="material-symbols-outlined text-lg">mail</span>
                                 AI Drafted Outreach Email
                             </h2>
                             <div className="flex items-center gap-3">
