@@ -6,58 +6,58 @@ import { getLeadStats, getLeads } from "@/lib/api";
 export default async function Home() {
     const [leads, stats] = await Promise.all([getLeads(), getLeadStats()]);
 
-    const totalLeads = stats.total;
+    const kpis = [
+        { label: 'Total Leads', value: stats.total, highlight: true },
+        { label: 'Analyzed Leads', value: stats.analyzed, highlight: false },
+        { label: 'High Priority', value: stats.highPriority, highlight: false },
+        { label: 'Average AI Score', value: stats.averageScore, highlight: false },
+    ];
 
-    const analyzedLeads = stats.analyzed;
-
-    const highPriorityLeads = stats.highPriority;
-
-    const averageScore = stats.averageScore;
-    
-    
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen font-body">
             <AutoRefresh />
 
-            <div className="mx-auto max-w-7xl px-6 py-10">
-                <div className="mb-8 flex items-start justify-between gap-4">
+            <div className="pointer-events-none fixed top-0 right-0 h-[800px] w-[800px] rounded-full bg-primary/5 blur-[120px] mix-blend-screen animate-pulse-slow" />
+            <div className="pointer-events-none fixed bottom-0 left-1/4 h-[600px] w-[600px] rounded-full bg-tertiary/5 blur-[100px] mix-blend-screen" />
+
+            <div className="relative mx-auto max-w-[1600px] px-6 py-10 lg:px-12">
+                <header className="mb-10 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">
-                            AI Lead Qualification Dashboard
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary">
+                            <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                            Live Feed
+                        </div>
+                        <h1 className="gradient-text font-headline text-4xl font-black tracking-tight lg:text-5xl">
+                            Lead Intelligence
                         </h1>
-                        <p className="mt-2 text-slate-600">
-                            View inbound leads, qualification scores, and AI-generated outreach.
+                        <p className="mt-2 max-w-xl text-base font-medium text-on-surface/50">
+                            Real-time algorithmic qualification and intent scoring.
                         </p>
                     </div>
-                
+
                     <Link
                         href="/leads/new"
-                        className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                        className="gradient-primary inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-transform hover:scale-105 active:scale-95"
                     >
                         + New Lead
                     </Link>
-                </div>
+                </header>
 
-                <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm font-medium text-slate-500">Total Leads</p>
-                        <p className="mt-2 text-3xl font-bold text-slate-900">{totalLeads}</p>
-                    </div>
-                
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm font-medium text-slate-500">Analyzed Leads</p>
-                        <p className="mt-2 text-3xl font-bold text-slate-900">{analyzedLeads}</p>
-                    </div>
-                
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm font-medium text-slate-500">High Priority</p>
-                        <p className="mt-2 text-3xl font-bold text-slate-900">{highPriorityLeads}</p>
-                    </div>
-                
-                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <p className="text-sm font-medium text-slate-500">Average AI Score</p>
-                        <p className="mt-2 text-3xl font-bold text-slate-900">{averageScore}</p>
-                    </div>
+                <div className="mb-10 grid gap-4 md:grid-cols-4">
+                    {kpis.map((kpi) => (
+                        <div key={kpi.label} className="glass-card rounded-2xl p-5">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-on-surface/40">
+                                {kpi.label}
+                            </p>
+                            <p
+                                className={`mt-2 font-headline text-3xl font-black ${
+                                    kpi.highlight ? 'text-primary' : 'text-on-surface'
+                                }`}
+                            >
+                                {kpi.value}
+                            </p>
+                        </div>
+                    ))}
                 </div>
 
                 <LeadsDashboard leads={leads} />
