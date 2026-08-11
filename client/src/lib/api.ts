@@ -102,3 +102,16 @@ export const updateLeadStatus = async (leadId: string, status: string) => {
 
     return response.json();
 };
+
+export const sendLeadEmail = async (leadId: string) => {
+    const response = await fetch(`${API_BASE_URL}/api/leads/${leadId}/send-email`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message ?? 'Failed to send email');
+    }
+
+    return response.json();
+};

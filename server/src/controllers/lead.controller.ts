@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createLead, getAllLeads, getLeadById, getLeadStats, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
+import { sendLeadEmail } from "../services/email.service";
 import { CreateLeadInput, UpdateLeadStatusInput } from "../types/lead.types";
 
 export const createLeadController = async (req: Request, res: Response) => {
@@ -83,4 +84,28 @@ export const reanalyzeLeadController = async (req: Request, res: Response) => {
     }
 
     return res.status(200).json({ message: 'Lead reanalysis triggered successfully' })
+}
+
+export const sendLeadEmailController = async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+
+    const lead = await getLeadById(id);
+
+    if (!lead) {
+        return res.status(404).json({ message: 'Lead not found' });
+    }
+
+    if (!lead.analysis) {
+        return res.status(409).json({ message: 'No AI analysis available for this lead yet' });
+    }
+
+    try {
+        const result = await sendLeadEmail(lead, lead.analysis);
+
+        return res.status(200).json({ message: 'Email sent successfully', data: result });
+    } catch (error) {
+        console.error('Failed to send email:', error);
+
+        return res.status(502).json({ message: 'Failed to send email' });
+    }
 }

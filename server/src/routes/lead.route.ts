@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createLeadController, getAllLeadsController, getLeadByIdController, getLeadStatsController, reanalyzeLeadController, updateLeadStatusController } from "../controllers/lead.controller";
+import { createLeadController, getAllLeadsController, getLeadByIdController, getLeadStatsController, reanalyzeLeadController, sendLeadEmailController, updateLeadStatusController } from "../controllers/lead.controller";
 import { validateCreateLead } from "../middleware/validate-create-lead";
 import { validateUpdateLeadStatus } from "../middleware/validate-update-lead-status";
 import leadAnalysisRoutes from "./lead-analysis.route";
@@ -16,5 +16,6 @@ router.get('/:id', validateUuidParam, getLeadByIdController)
 router.post('/', publicLimiter, validateCreateLead, createLeadController);
 router.patch('/:id', validateUpdateLeadStatus, updateLeadStatusController)
 router.post('/:id/reanalyze', publicLimiter, validateUuidParam, reanalyzeLeadController)
+router.post('/:id/send-email', publicLimiter, validateUuidParam, sendLeadEmailController)
 
 export default router;

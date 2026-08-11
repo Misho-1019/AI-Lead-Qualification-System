@@ -198,6 +198,11 @@ PORT=3030
 N8N_WEBHOOK_URL=
 INTERNAL_API_KEY=
 FRONTEND_URL=
+# Resend API key for sending AI-drafted outreach emails (https://resend.com)
+RESEND_API_KEY=
+EMAIL_FROM=onboarding@resend.dev
+# Optional: if set, all emails go to this address (Resend sandbox, no domain needed)
+EMAIL_TEST_TO=
 ```
 
 #### Frontend `.env.local`

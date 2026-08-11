@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CopyEmailButton from "@/components/copy-email-button";
 import ReanalyzeButton from "@/components/reanalyze-button";
+import SendEmailButton from "@/components/send-email-button";
 import StatusSelect from "@/components/status-select";
 import { getLead } from "@/lib/api";
 
@@ -170,10 +171,17 @@ export default async function LeadDetailsPage({ params }: { params: Promise<{ id
                             <h2 className="text-xs font-bold uppercase tracking-wider text-on-surface/60">
                                 AI Drafted Outreach Email
                             </h2>
-                            <CopyEmailButton
-                                subject={lead.analysis?.outreach_email_subject ?? ''}
-                                body={lead.analysis?.outreach_email_body ?? ''}
-                            />
+                            <div className="flex items-center gap-3">
+                                <CopyEmailButton
+                                    subject={lead.analysis?.outreach_email_subject ?? ''}
+                                    body={lead.analysis?.outreach_email_body ?? ''}
+                                />
+                                <SendEmailButton
+                                    leadId={lead.id}
+                                    leadEmail={lead.email}
+                                    hasAnalysis={!!lead.analysis}
+                                />
+                            </div>
                         </div>
 
                         {lead.analysis ? (
