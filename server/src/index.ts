@@ -10,7 +10,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import helmet from "helmet";
 import prisma from "./utils/prisma";
 
-const requiredEnvVars = ['DATABASE_URL', 'N8N_WEBHOOK_URL', 'INTERNAL_API_KEY', 'FRONTEND_URL'];
+const requiredEnvVars = ['DATABASE_URL', 'OPENAI_API_KEY', 'INTERNAL_API_KEY', 'FRONTEND_URL'];
 
 for (const envVar of requiredEnvVars) {
     if (!process.env[envVar]) {
@@ -21,11 +21,16 @@ for (const envVar of requiredEnvVars) {
 const app = express();
 const PORT: number = Number(process.env.PORT) || 3030;
 
+const frontendOrigins = (process.env.FRONTEND_URL ?? '')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean);
+
 app.use(express.json({ limit: '100kb' }));
 app.use(helmet())
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL,
+        origin: frontendOrigins,
     })
 );
 

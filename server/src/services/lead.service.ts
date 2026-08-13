@@ -1,6 +1,43 @@
-import { CreateLeadInput, Lead } from "../types/lead.types";
+import { CreateLeadInput } from "../types/lead.types";
 import prisma from "../utils/prisma";
-import { triggerLeadAnalysisWorkflow } from "./n8n.service";
+import { analyzeLeadWithAI } from "./ai-analysis.service";
+import { saveLeadAnalysisFromCallback } from "./lead-analysis.service";
+import { appendLeadToSheet, exportAllLeadsToSheet } from "./sheets.service";
+
+type LeadForAnalysisInput = {
+    id: string;
+    full_name: string;
+    email: string;
+    company?: string | null;
+    role?: string | null;
+    website?: string | null;
+    industry?: string | null;
+    company_size?: string | null;
+    budget_range?: string | null;
+    source?: string | null;
+    pain_point?: string | null;
+    notes?: string | null;
+};
+
+const analyzeLeadAsync = (lead: LeadForAnalysisInput) => {
+    analyzeLeadWithAI(lead)
+        .then((analysis) =>
+            saveLeadAnalysisFromCallback({
+                lead_id: lead.id,
+                ...analysis,
+            })
+        )
+        .then((savedAnalysis) => {
+            if (savedAnalysis) {
+                appendLeadToSheet({ ...lead, analysis: savedAnalysis }).catch((error) => {
+                    console.error('Failed to append lead to Google Sheets:', error);
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Failed to run AI lead analysis:', error);
+        });
+};
 
 export const createLead = async (leadData: CreateLeadInput) => {
     const newLead = await prisma.lead.create({
@@ -19,7 +56,7 @@ export const createLead = async (leadData: CreateLeadInput) => {
         }
     })
 
-    await triggerLeadAnalysisWorkflow(newLead)
+    analyzeLeadAsync(newLead);
 
     return newLead;
 }
@@ -95,7 +132,16 @@ export const reanalyzeLead = async (id: string) => {
 
     if (!lead) return null;
 
-    await triggerLeadAnalysisWorkflow(lead);
+    analyzeLeadAsync(lead);
 
     return lead;
+}
+
+export const exportLeadsToSheet = async () => {
+    const leads = await prisma.lead.findMany({
+        orderBy: { created_at: 'desc' },
+        include: { analysis: true },
+    });
+
+    return exportAllLeadsToSheet(leads);
 }

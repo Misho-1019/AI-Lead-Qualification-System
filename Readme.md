@@ -39,11 +39,11 @@ The system is designed to simulate a **real internal sales tool**, where AI is i
 - Suggested next steps for sales actions
 - Generated outreach email (subject + body)
 
-### Workflow Automation (n8n Integration)
+### AI Qualification (in-app, OpenAI)
 
-- Lead creation triggers external automation workflow
-- Asynchronous AI processing via webhook
-- Secure internal callback for analysis persistence
+- Lead creation triggers asynchronous AI analysis
+- Direct OpenAI integration (GPT-4o-mini) scores and qualifies the lead
+- Structured JSON output persisted as lead analysis
 - Reanalysis support for updated lead evaluation
 
 ### Dashboard & UX
@@ -103,13 +103,13 @@ The application follows a layered client–server architecture with external wor
 - RESTful endpoints for lead management
 - Service-layer architecture for business logic
 - Validation middleware and error handling
-- Integration with external automation workflows
+- Direct AI analysis integration (OpenAI)
 
-### Workflow Layer (n8n)
+### AI Analysis Layer (OpenAI)
 
-- Receives lead data from backend
-- Performs AI processing (scoring, summarization, generation)
-- Sends results back via secure webhook callback
+- Receives lead data directly from the backend service
+- Performs AI processing (scoring, summarization, outreach generation)
+- Returns structured JSON persisted to the database
 
 ### Data Layer (PostgreSQL + Prisma)
 
@@ -126,11 +126,10 @@ This mirrors real-world systems where **AI processing is asynchronous and decoup
 
 1. User creates a lead via the frontend  
 2. Backend stores the lead in the database  
-3. Backend triggers an n8n workflow via webhook  
-4. n8n performs AI-based analysis  
-5. n8n sends results back via secure internal callback  
-6. Backend stores the analysis  
-7. Frontend reflects updated insights automatically  
+3. Backend triggers asynchronous AI analysis (OpenAI)  
+4. AI performs scoring, summarization, and outreach generation  
+5. Backend persists the analysis  
+6. Frontend reflects updated insights automatically  
 
 ---
 
@@ -161,7 +160,7 @@ This mirrors real-world systems where **AI processing is asynchronous and decoup
 - TypeScript
 - Prisma ORM
 - PostgreSQL
-- n8n (workflow automation)
+- OpenAI (AI lead analysis)
 
 ---
 
@@ -195,7 +194,8 @@ DATABASE_URL=
 # Direct connection string for Prisma CLI (migrations)
 DIRECT_URL=
 PORT=3030
-N8N_WEBHOOK_URL=
+# OpenAI API key for AI lead analysis (https://platform.openai.com/api-keys)
+OPENAI_API_KEY=
 INTERNAL_API_KEY=
 FRONTEND_URL=
 # Resend API key for sending AI-drafted outreach emails (https://resend.com)
@@ -203,6 +203,9 @@ RESEND_API_KEY=
 EMAIL_FROM=onboarding@resend.dev
 # Optional: if set, all emails go to this address (Resend sandbox, no domain needed)
 EMAIL_TEST_TO=
+# Google Sheets sync (optional): spreadsheet ID + service account JSON key
+GOOGLE_SHEETS_SPREADSHEET_ID=
+GOOGLE_SERVICE_ACCOUNT_JSON=
 ```
 
 #### Frontend `.env.local`

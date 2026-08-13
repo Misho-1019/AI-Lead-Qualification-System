@@ -1,4 +1,5 @@
 import AutoRefresh from "@/components/auto-refresh";
+import ExportToSheetsButton from "@/components/export-to-sheets-button";
 import LeadsDashboard from "@/components/leads-dashboard";
 import Link from "next/link";
 import { getLeadStats, getLeads } from "@/lib/api";
@@ -35,13 +36,17 @@ export default async function Home() {
                         </p>
                     </div>
 
-                    <Link
-                        href="/leads/new"
-                        className="gradient-primary inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-transform hover:scale-105 active:scale-95"
-                    >
-                        <span className="material-symbols-outlined text-base">add</span>
-                        New Lead
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <ExportToSheetsButton />
+
+                        <Link
+                            href="/leads/new"
+                            className="gradient-primary inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-transform hover:scale-105 active:scale-95"
+                        >
+                            <span className="material-symbols-outlined text-base">add</span>
+                            New Lead
+                        </Link>
+                    </div>
                 </header>
 
                 <div className="mb-10 grid gap-4 md:grid-cols-4">

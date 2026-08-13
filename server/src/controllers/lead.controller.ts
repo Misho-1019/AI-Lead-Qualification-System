@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { createLead, getAllLeads, getLeadById, getLeadStats, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
+import { createLead, exportLeadsToSheet, getAllLeads, getLeadById, getLeadStats, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
 import { sendLeadEmail } from "../services/email.service";
+import { isSheetsConfigured } from "../services/sheets.service";
 import { CreateLeadInput, UpdateLeadStatusInput } from "../types/lead.types";
 
 export const createLeadController = async (req: Request, res: Response) => {
@@ -107,5 +108,23 @@ export const sendLeadEmailController = async (req: Request, res: Response) => {
         console.error('Failed to send email:', error);
 
         return res.status(502).json({ message: 'Failed to send email' });
+    }
+}
+
+export const exportLeadsToSheetsController = async (req: Request, res: Response) => {
+    if (!isSheetsConfigured()) {
+        return res.status(200).json({
+            message: 'Google Sheets is not configured. Add GOOGLE_SHEETS_SPREADSHEET_ID and GOOGLE_SERVICE_ACCOUNT_JSON to enable export.'
+        });
+    }
+
+    try {
+        await exportLeadsToSheet();
+
+        return res.status(200).json({ message: 'Leads exported to Google Sheets successfully' });
+    } catch (error) {
+        console.error('Failed to export leads to Google Sheets:', error);
+
+        return res.status(502).json({ message: 'Failed to export leads to Google Sheets' });
     }
 }

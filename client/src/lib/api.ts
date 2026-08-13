@@ -115,3 +115,16 @@ export const sendLeadEmail = async (leadId: string) => {
 
     return response.json();
 };
+
+export const exportLeadsToSheets = async () => {
+    const response = await fetch(`${API_BASE_URL}/api/leads/export-to-sheets`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message ?? 'Failed to export leads to Google Sheets');
+    }
+
+    return response.json();
+};
