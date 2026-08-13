@@ -3,9 +3,20 @@ import ExportToSheetsButton from "@/components/export-to-sheets-button";
 import LeadsDashboard from "@/components/leads-dashboard";
 import Link from "next/link";
 import { getLeadStats, getLeads } from "@/lib/api";
+import { Lead, LeadStats } from "@/types/lead";
 
 export default async function Home() {
-    const [leads, stats] = await Promise.all([getLeads(), getLeadStats()]);
+    let leads: Lead[] = [];
+    let stats: LeadStats = { total: 0, analyzed: 0, highPriority: 0, averageScore: 0 };
+    let apiUnavailable = false;
+
+    try {
+        const [l, s] = await Promise.all([getLeads(), getLeadStats()]);
+        leads = l;
+        stats = s;
+    } catch {
+        apiUnavailable = true;
+    }
 
     const kpis = [
         { label: 'Total Leads', value: stats.total, highlight: true },
@@ -49,6 +60,13 @@ export default async function Home() {
                     </div>
                 </header>
 
+                {apiUnavailable && (
+                    <div className="mb-8 flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm font-medium text-amber-300">
+                        <span className="material-symbols-outlined text-lg">cloud_off</span>
+                        Backend is currently unavailable — please try again in a moment.
+                    </div>
+                )}
+
                 <div className="mb-10 grid gap-4 md:grid-cols-4">
                     {kpis.map((kpi) => (
                         <div key={kpi.label} className="glass-card rounded-2xl p-5">
@@ -60,13 +78,13 @@ export default async function Home() {
                                     kpi.highlight ? 'text-primary' : 'text-on-surface'
                                 }`}
                             >
-                                {kpi.value}
+                                {apiUnavailable ? '—' : kpi.value}
                             </p>
                         </div>
                     ))}
                 </div>
 
-                <LeadsDashboard leads={leads} />
+                <LeadsDashboard leads={leads} isUnavailable={apiUnavailable} />
             </div>
         </main>
     );

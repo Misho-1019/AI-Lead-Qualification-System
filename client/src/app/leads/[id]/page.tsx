@@ -5,6 +5,7 @@ import ReanalyzeButton from "@/components/reanalyze-button";
 import SendEmailButton from "@/components/send-email-button";
 import StatusSelect from "@/components/status-select";
 import { getLead } from "@/lib/api";
+import { Lead } from "@/types/lead";
 
 function ScoreRing({ score }: { score: number | null }) {
     const color = '#6366f1';
@@ -25,7 +26,40 @@ function ScoreRing({ score }: { score: number | null }) {
 
 export default async function LeadDetailsPage({ params }: { params: Promise<{ id: string }>}) {
     const { id } = await params;
-    const lead = await getLead(id);
+
+    let lead: Lead | null = null;
+    let apiUnavailable = false;
+
+    try {
+        lead = await getLead(id);
+    } catch {
+        apiUnavailable = true;
+    }
+
+    if (apiUnavailable) {
+        return (
+            <main className="min-h-screen font-body">
+                <div className="mx-auto flex min-h-screen max-w-5xl items-center justify-center px-6">
+                    <div className="glass-card rounded-3xl p-12 text-center">
+                        <span className="material-symbols-outlined text-5xl text-amber-400">cloud_off</span>
+                        <h1 className="mt-4 font-headline text-2xl font-black text-on-surface">
+                            Unable to load this lead
+                        </h1>
+                        <p className="mt-2 text-on-surface/60">
+                            The backend may be offline. Please try again in a moment.
+                        </p>
+                        <Link
+                            href="/"
+                            className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold text-on-surface transition-colors hover:bg-white/10"
+                        >
+                            <span className="material-symbols-outlined text-base">arrow_back</span>
+                            Back to dashboard
+                        </Link>
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     if (!lead) {
         notFound();

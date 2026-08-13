@@ -6,6 +6,7 @@ import { Lead } from "@/types/lead";
 
 type LeadsDashboardProps = {
     leads: Lead[];
+    isUnavailable?: boolean;
 }
 
 const STATUS_TABS = [
@@ -186,7 +187,7 @@ function LeadCard({ lead }: { lead: Lead }) {
     );
 }
 
-export default function LeadsDashboard({ leads }: LeadsDashboardProps) {
+export default function LeadsDashboard({ leads, isUnavailable = false }: LeadsDashboardProps) {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
@@ -278,8 +279,12 @@ export default function LeadsDashboard({ leads }: LeadsDashboardProps) {
 
             {filteredLeads.length === 0 ? (
                 <div className="glass-card rounded-3xl p-16 text-center">
-                    <p className="text-lg font-bold text-on-surface">No leads match the current filters.</p>
-                    <p className="mt-1 text-sm text-on-surface/50">Try adjusting the search or status filter.</p>
+                    <p className="text-lg font-bold text-on-surface">
+                        {isUnavailable ? 'Backend is currently unavailable.' : 'No leads match the current filters.'}
+                    </p>
+                    <p className="mt-1 text-sm text-on-surface/50">
+                        {isUnavailable ? 'Please try again in a moment.' : 'Try adjusting the search or status filter.'}
+                    </p>
                 </div>
             ) : (
                 <div className="masonry-grid">
