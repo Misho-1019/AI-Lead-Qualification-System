@@ -6,6 +6,7 @@ import cors from "cors";
 import healthRoute from "./routes/health.route";
 import leadRoute from "./routes/lead.route";
 import internalRoutes from "./routes/internal.route";
+import analyticsRoutes from "./routes/analytics.route";
 import { errorHandler } from "./middleware/errorHandler";
 import helmet from "helmet";
 import prisma from "./utils/prisma";
@@ -37,6 +38,7 @@ app.use(
 app.use('/', healthRoute);
 app.use('/api/leads', leadRoute)
 app.use('/api/internal', internalRoutes)
+app.use('/api/analytics', analyticsRoutes)
 
 app.use(errorHandler);
 

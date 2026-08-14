@@ -123,13 +123,13 @@ type SheetLead = {
     } | null;
 };
 
-const HEADERS = [
+export const HEADERS = [
     'Created At', 'Full Name', 'Email', 'Company', 'Role', 'Industry', 'Company Size',
     'Budget Range', 'Source', 'Pain Point', 'Status', 'Score', 'Priority', 'Summary',
     'Recommended Next Step', 'Outreach Email Subject', 'Outreach Email Body',
 ];
 
-const buildRow = (lead: SheetLead): string[] => [
+export const buildRow = (lead: SheetLead): string[] => [
     lead.created_at instanceof Date ? lead.created_at.toISOString() : String(lead.created_at ?? ''),
     lead.full_name,
     lead.email,

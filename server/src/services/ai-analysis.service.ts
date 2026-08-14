@@ -35,6 +35,26 @@ type LeadForAnalysis = {
     notes?: string | null;
 };
 
+export const validateAnalysisPayload = (parsed: unknown): LeadAnalysisResult => {
+    const p = parsed as Partial<LeadAnalysisResult>;
+
+    if (
+        !p ||
+        typeof p !== 'object' ||
+        typeof p.score !== 'number' || p.score < 0 || p.score > 100 ||
+        typeof p.priority !== 'string' || !p.priority.trim() ||
+        typeof p.summary !== 'string' || !p.summary.trim() ||
+        typeof p.qualification_reason !== 'string' || !p.qualification_reason.trim() ||
+        typeof p.outreach_email_subject !== 'string' || !p.outreach_email_subject.trim() ||
+        typeof p.outreach_email_body !== 'string' || !p.outreach_email_body.trim() ||
+        typeof p.recommended_next_step !== 'string' || !p.recommended_next_step.trim()
+    ) {
+        throw new Error('OpenAI returned an invalid analysis payload');
+    }
+
+    return p as LeadAnalysisResult;
+};
+
 export const analyzeLeadWithAI = async (lead: LeadForAnalysis): Promise<LeadAnalysisResult> => {
     const apiKey = process.env.OPENAI_API_KEY;
 
@@ -87,17 +107,5 @@ export const analyzeLeadWithAI = async (lead: LeadForAnalysis): Promise<LeadAnal
 
     const parsed = JSON.parse(content) as Partial<LeadAnalysisResult>;
 
-    if (
-        typeof parsed.score !== 'number' || parsed.score < 0 || parsed.score > 100 ||
-        typeof parsed.priority !== 'string' || !parsed.priority.trim() ||
-        typeof parsed.summary !== 'string' || !parsed.summary.trim() ||
-        typeof parsed.qualification_reason !== 'string' || !parsed.qualification_reason.trim() ||
-        typeof parsed.outreach_email_subject !== 'string' || !parsed.outreach_email_subject.trim() ||
-        typeof parsed.outreach_email_body !== 'string' || !parsed.outreach_email_body.trim() ||
-        typeof parsed.recommended_next_step !== 'string' || !parsed.recommended_next_step.trim()
-    ) {
-        throw new Error('OpenAI returned an invalid analysis payload');
-    }
-
-    return parsed as LeadAnalysisResult;
+    return validateAnalysisPayload(parsed);
 };

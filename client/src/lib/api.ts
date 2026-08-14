@@ -1,4 +1,4 @@
-import { Lead, LeadStats } from "@/types/lead";
+import { AnalyticsOverview, Lead, LeadStats } from "@/types/lead";
 
 const getApiBaseUrl = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -32,6 +32,19 @@ export async function getLeadStats(): Promise<LeadStats> {
 
     if (!response.ok) {
         throw new Error('Failed to fetch lead stats');
+    }
+
+    const result = await response.json();
+    return result.data;
+}
+
+export async function getAnalytics(): Promise<AnalyticsOverview> {
+    const response = await fetch(`${API_BASE_URL}/api/analytics`, {
+        cache: 'no-store'
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch analytics');
     }
 
     const result = await response.json();

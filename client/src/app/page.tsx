@@ -48,6 +48,14 @@ export default async function Home() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <Link
+                            href="/analytics"
+                            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-on-surface transition-colors hover:bg-white/10"
+                        >
+                            <span className="material-symbols-outlined text-base">monitoring</span>
+                            Analytics
+                        </Link>
+
                         <ExportToSheetsButton />
 
                         <Link

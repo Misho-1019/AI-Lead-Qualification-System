@@ -18,6 +18,13 @@ export type LeadStats = {
     averageScore: number;
 };
 
+export type AnalyticsOverview = {
+    scoreDistribution: { range: string; count: number }[];
+    priorityBreakdown: { priority: string; count: number }[];
+    statusBreakdown: { status: string; count: number }[];
+    leadsOverTime: { date: string; count: number }[];
+};
+
 export type Lead = {
     id: string;
     full_name: string;
