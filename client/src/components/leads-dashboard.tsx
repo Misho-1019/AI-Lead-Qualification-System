@@ -1,11 +1,18 @@
 'use client'
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 import { Lead } from "@/types/lead";
 
 type LeadsDashboardProps = {
     leads: Lead[];
+    total: number;
+    page: number;
+    limit: number;
+    search: string;
+    status: string;
+    sortBy: string;
     isUnavailable?: boolean;
 }
 
@@ -187,67 +194,65 @@ function LeadCard({ lead }: { lead: Lead }) {
     );
 }
 
-export default function LeadsDashboard({ leads, isUnavailable = false }: LeadsDashboardProps) {
-    const [search, setSearch] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [sortBy, setSortBy] = useState('newest');
+export default function LeadsDashboard({
+    leads,
+    total,
+    page,
+    limit,
+    search,
+    status,
+    sortBy,
+    isUnavailable = false,
+}: LeadsDashboardProps) {
+    const router = useRouter();
+    const pathname = usePathname();
 
-    const filteredLeads = useMemo(() => {
-        const normalizedSearch = search.trim().toLowerCase();
+    const [searchValue, setSearchValue] = useState(search);
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-        const filtered = leads.filter(lead => {
-            const matchesSearch =
-                normalizedSearch === '' ||
-                lead.full_name.toLowerCase().includes(normalizedSearch) ||
-                lead.email.toLowerCase().includes(normalizedSearch) ||
-                (lead.company ?? '').toLowerCase().includes(normalizedSearch);
+    const navigate = (updates: { search?: string; status?: string; sortBy?: string; page?: number }) => {
+        const next = {
+            search: updates.search ?? search,
+            status: updates.status ?? status,
+            sortBy: updates.sortBy ?? sortBy,
+            page: updates.page ?? page,
+        };
 
-            const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+        const qs = new URLSearchParams();
+        if (next.search) qs.set('search', next.search);
+        if (next.status !== 'all') qs.set('status', next.status);
+        if (next.sortBy !== 'newest') qs.set('sortBy', next.sortBy);
+        if (next.page > 1) qs.set('page', String(next.page));
 
-            return matchesSearch && matchesStatus;
-        })
+        const q = qs.toString();
+        router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+    };
 
-        const sorted = [...filtered];
+    const handleSearchChange = (value: string) => {
+        setSearchValue(value);
 
-        switch (sortBy) {
-            case 'highest_score':
-                sorted.sort((a, b) => (b.analysis?.score ?? -1) - (a.analysis?.score ?? -1));
-                break;
-            case 'lowest_score':
-                sorted.sort((a, b) => (a.analysis?.score ?? 999) - (b.analysis?.score ?? 999));
-                break;
-            case 'oldest':
-                sorted.sort(
-                    (a, b) =>
-                        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-                );
-                break;
-            case 'newest':
-            default:
-                sorted.sort(
-                    (a, b) =>
-                        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                );
-                break;
-        }
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            navigate({ search: value, page: 1 });
+        }, 350);
+    };
 
-        return sorted;
-    }, [leads, search, statusFilter, sortBy])
+    const totalPages = Math.max(1, Math.ceil(total / limit));
 
     return (
         <div>
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <input
                     type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    value={searchValue}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     placeholder="Search by name, email, or company..."
                     className="w-full rounded-xl border border-white/10 bg-surface-container/50 px-4 py-3 text-sm text-on-surface outline-none backdrop-blur-md transition-all placeholder:text-on-surface/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 md:w-80"
                 />
 
                 <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                    onChange={(e) => navigate({ sortBy: e.target.value, page: 1 })}
                     className="w-full rounded-xl border border-white/10 bg-surface-container/50 px-4 py-3 text-sm text-on-surface outline-none backdrop-blur-md transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/50 md:w-64"
                 >
                     <option value="newest">Newest first</option>
@@ -259,12 +264,12 @@ export default function LeadsDashboard({ leads, isUnavailable = false }: LeadsDa
 
             <div className="mb-8 flex flex-wrap gap-2">
                 {STATUS_TABS.map((tab) => {
-                    const isActive = statusFilter === tab.value;
+                    const isActive = status === tab.value;
 
                     return (
                         <button
                             key={tab.value}
-                            onClick={() => setStatusFilter(tab.value)}
+                            onClick={() => navigate({ status: tab.value, page: 1 })}
                             className={`rounded-xl px-5 py-2 text-sm font-bold transition-all ${
                                 isActive
                                     ? 'bg-primary text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
@@ -277,21 +282,57 @@ export default function LeadsDashboard({ leads, isUnavailable = false }: LeadsDa
                 })}
             </div>
 
-            {filteredLeads.length === 0 ? (
+            {isUnavailable ? (
+                <div className="glass-card rounded-3xl p-16 text-center">
+                    <p className="text-lg font-bold text-on-surface">Backend is currently unavailable.</p>
+                    <p className="mt-1 text-sm text-on-surface/50">Please try again in a moment.</p>
+                </div>
+            ) : leads.length === 0 ? (
                 <div className="glass-card rounded-3xl p-16 text-center">
                     <p className="text-lg font-bold text-on-surface">
-                        {isUnavailable ? 'Backend is currently unavailable.' : 'No leads match the current filters.'}
+                        {search || status !== 'all' ? 'No leads match the current filters.' : 'No leads yet.'}
                     </p>
                     <p className="mt-1 text-sm text-on-surface/50">
-                        {isUnavailable ? 'Please try again in a moment.' : 'Try adjusting the search or status filter.'}
+                        {search || status !== 'all'
+                            ? 'Try adjusting the search or status filter.'
+                            : 'Create your first lead to get started.'}
                     </p>
                 </div>
             ) : (
-                <div className="masonry-grid">
-                    {filteredLeads.map((lead) => (
-                        <LeadCard key={lead.id} lead={lead} />
-                    ))}
-                </div>
+                <>
+                    <div className="masonry-grid">
+                        {leads.map((lead) => (
+                            <LeadCard key={lead.id} lead={lead} />
+                        ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <div className="mt-6 flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 px-5 py-4">
+                            <button
+                                onClick={() => navigate({ page: page - 1 })}
+                                disabled={page <= 1}
+                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                <span className="material-symbols-outlined text-base">chevron_left</span>
+                                Previous
+                            </button>
+
+                            <span className="text-sm text-on-surface/60">
+                                Page <span className="font-bold text-on-surface">{page}</span> of {totalPages}
+                                <span className="ml-2 text-on-surface/40">· {total} leads</span>
+                            </span>
+
+                            <button
+                                onClick={() => navigate({ page: page + 1 })}
+                                disabled={page >= totalPages}
+                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                                Next
+                                <span className="material-symbols-outlined text-base">chevron_right</span>
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

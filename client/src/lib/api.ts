@@ -12,8 +12,31 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
-export async function getLeads(): Promise<Lead[]> {
-    const response = await fetch(`${API_BASE_URL}/api/leads`, {
+export type LeadListResult = {
+    leads: Lead[];
+    total: number;
+    page: number;
+    limit: number;
+};
+
+export type LeadQueryParams = {
+    page?: number;
+    search?: string;
+    status?: string;
+    sortBy?: string;
+};
+
+export async function getLeads(params: LeadQueryParams = {}): Promise<LeadListResult> {
+    const qs = new URLSearchParams();
+
+    if (params.page && params.page > 1) qs.set('page', String(params.page));
+    if (params.search) qs.set('search', params.search);
+    if (params.status && params.status !== 'all') qs.set('status', params.status);
+    if (params.sortBy && params.sortBy !== 'newest') qs.set('sortBy', params.sortBy);
+
+    const query = qs.toString();
+
+    const response = await fetch(`${API_BASE_URL}/api/leads${query ? `?${query}` : ''}`, {
         cache: 'no-store'
     });
 
@@ -22,7 +45,12 @@ export async function getLeads(): Promise<Lead[]> {
     }
 
     const result = await response.json();
-    return result.data.leads;
+    return {
+        leads: result.data.leads,
+        total: result.data.total,
+        page: result.page,
+        limit: result.limit,
+    };
 }
 
 export async function getLeadStats(): Promise<LeadStats> {

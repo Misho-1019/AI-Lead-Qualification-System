@@ -15,17 +15,29 @@ export const createLeadController = async (req: Request, res: Response) => {
     })
 }
 
+const VALID_STATUSES = ['all', 'new', 'contacted', 'qualified', 'rejected'];
+const VALID_SORTS = ['newest', 'oldest', 'highest_score', 'lowest_score'];
+
 export const getAllLeadsController = async (req: Request, res: Response) => {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
 
-    const { leads, total } = await getAllLeads(page, limit);
+    const search = typeof req.query.search === 'string' ? req.query.search : undefined;
+    const status = typeof req.query.status === 'string' && VALID_STATUSES.includes(req.query.status)
+        ? req.query.status
+        : 'all';
+    const sortBy = typeof req.query.sortBy === 'string' && VALID_SORTS.includes(req.query.sortBy)
+        ? req.query.sortBy
+        : 'newest';
+
+    const { leads, total } = await getAllLeads({ page, limit, search, status, sortBy });
 
     return res.status(200).json({
         message: 'Leads fetched successfully',
         data: { leads, total },
         page,
-        limit
+        limit,
+        total
     })
 }
 

@@ -5,14 +5,32 @@ import Link from "next/link";
 import { getLeadStats, getLeads } from "@/lib/api";
 import { Lead, LeadStats } from "@/types/lead";
 
-export default async function Home() {
+const DEFAULT_LIMIT = 10;
+
+export default async function Home({
+    searchParams,
+}: {
+    searchParams: Promise<{ page?: string; search?: string; status?: string; sortBy?: string }>;
+}) {
+    const params = await searchParams;
+
+    const page = Math.max(1, parseInt(params.page ?? '1') || 1);
+    const search = params.search ?? '';
+    const status = params.status ?? 'all';
+    const sortBy = params.sortBy ?? 'newest';
+
     let leads: Lead[] = [];
     let stats: LeadStats = { total: 0, analyzed: 0, highPriority: 0, averageScore: 0 };
+    let total = 0;
     let apiUnavailable = false;
 
     try {
-        const [l, s] = await Promise.all([getLeads(), getLeadStats()]);
-        leads = l;
+        const [leadList, s] = await Promise.all([
+            getLeads({ page, search, status, sortBy }),
+            getLeadStats(),
+        ]);
+        leads = leadList.leads;
+        total = leadList.total;
         stats = s;
     } catch {
         apiUnavailable = true;
@@ -92,7 +110,16 @@ export default async function Home() {
                     ))}
                 </div>
 
-                <LeadsDashboard leads={leads} isUnavailable={apiUnavailable} />
+                <LeadsDashboard
+                    leads={leads}
+                    total={total}
+                    page={page}
+                    limit={DEFAULT_LIMIT}
+                    search={search}
+                    status={status}
+                    sortBy={sortBy}
+                    isUnavailable={apiUnavailable}
+                />
             </div>
         </main>
     );

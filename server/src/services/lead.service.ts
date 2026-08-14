@@ -61,21 +61,71 @@ export const createLead = async (leadData: CreateLeadInput) => {
     return newLead;
 }
 
-export const getAllLeads = async (page: number, limit: number) => {
+export type LeadQuery = {
+    page: number;
+    limit: number;
+    search?: string;
+    status?: string;
+    sortBy?: string;
+};
+
+export const getAllLeads = async ({ page, limit, search, status, sortBy }: LeadQuery) => {
     const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+
+    if (status && status !== 'all') {
+        where.status = status;
+    }
+
+    if (search && search.trim()) {
+        const term = search.trim();
+        where.OR = [
+            { full_name: { contains: term, mode: 'insensitive' } },
+            { email: { contains: term, mode: 'insensitive' } },
+            { company: { contains: term, mode: 'insensitive' } },
+        ];
+    }
+
+    // Score sorts need JS ordering (Prisma can't put null relations last for `desc`).
+    if (sortBy === 'highest_score' || sortBy === 'lowest_score') {
+        const all = await prisma.lead.findMany({
+            where,
+            include: { analysis: true },
+        });
+
+        const sorted = [...all].sort((a, b) => {
+            const aScore = a.analysis?.score ?? null;
+            const bScore = b.analysis?.score ?? null;
+
+            if (aScore == null && bScore == null) return 0;
+            if (aScore == null) return 1;
+            if (bScore == null) return -1;
+
+            return sortBy === 'highest_score' ? bScore - aScore : aScore - bScore;
+        });
+
+        return {
+            leads: sorted.slice(skip, skip + limit),
+            total: sorted.length,
+        };
+    }
+
+    const orderBy: Record<string, unknown> = sortBy === 'oldest'
+        ? { created_at: 'asc' }
+        : { created_at: 'desc' };
 
     const [leads, total] = await Promise.all([
         prisma.lead.findMany({
-            orderBy: {
-                created_at: 'desc',
-            },
+            where,
+            orderBy,
             include: {
                 analysis: true,
             },
             skip,
             take: limit,
         }),
-        prisma.lead.count(),
+        prisma.lead.count({ where }),
     ])
 
     return { leads, total };
