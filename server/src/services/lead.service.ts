@@ -195,3 +195,33 @@ export const exportLeadsToSheet = async () => {
 
     return exportAllLeadsToSheet(leads);
 }
+
+export const updateLeadsStatus = async (ids: string[], status: string) => {
+    const result = await prisma.lead.updateMany({
+        where: { id: { in: ids } },
+        data: { status },
+    });
+
+    return result.count;
+}
+
+export const deleteLeads = async (ids: string[]) => {
+    const result = await prisma.lead.deleteMany({
+        where: { id: { in: ids } },
+    });
+
+    return result.count;
+}
+
+export const exportLeadsByIds = async (ids: string[]) => {
+    const leads = await prisma.lead.findMany({
+        where: { id: { in: ids } },
+        include: { analysis: true },
+    });
+
+    for (const lead of leads) {
+        await appendLeadToSheet(lead);
+    }
+
+    return leads.length;
+}

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { bulkDeleteLeads, bulkExportLeads, bulkUpdateStatus } from "@/lib/api";
 import { Lead } from "@/types/lead";
 
 type LeadsDashboardProps = {
@@ -85,7 +87,7 @@ function ScoreRing({ score, size, color, glow }: { score: number | null; size: n
     );
 }
 
-function LeadCard({ lead }: { lead: Lead }) {
+function LeadCard({ lead, selected }: { lead: Lead; selected?: boolean }) {
     const score = lead.analysis?.score ?? null;
     const priority = lead.analysis?.priority ?? null;
     const priorityMeta = getPriorityMeta(priority);
@@ -96,7 +98,9 @@ function LeadCard({ lead }: { lead: Lead }) {
     return (
         <Link
             href={`/leads/${lead.id}`}
-            className={`masonry-item glass-card group relative block overflow-hidden rounded-3xl p-6 ${
+            className={`glass-card group relative block overflow-hidden rounded-3xl p-6 ${
+                selected ? 'ring-2 ring-primary/60' : ''
+            } ${
                 priority === 'high' ? 'border-rose-500/30 shadow-[0_0_30px_rgba(244,63,94,0.15)]' : ''
             } ${dimmed ? 'opacity-70 hover:opacity-100' : ''}`}
         >
@@ -239,6 +243,54 @@ export default function LeadsDashboard({
 
     const totalPages = Math.max(1, Math.ceil(total / limit));
 
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+    const toggleSelect = (id: string) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const clearSelection = () => setSelectedIds(new Set());
+
+    const handleBulkStatus = async (newStatus: string) => {
+        try {
+            const result = await bulkUpdateStatus(Array.from(selectedIds), newStatus);
+            toast.success(`${result?.data?.count ?? selectedIds.size} leads updated`);
+            clearSelection();
+            router.refresh();
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to update leads');
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        const confirmed = window.confirm(`Delete ${selectedIds.size} selected leads? This cannot be undone.`);
+        if (!confirmed) return;
+
+        try {
+            const result = await bulkDeleteLeads(Array.from(selectedIds));
+            toast.success(`${result?.data?.count ?? selectedIds.size} leads deleted`);
+            clearSelection();
+            router.refresh();
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to delete leads');
+        }
+    };
+
+    const handleBulkExport = async () => {
+        try {
+            const result = await bulkExportLeads(Array.from(selectedIds));
+            toast.success(result?.message ?? 'Leads exported to Google Sheets');
+            clearSelection();
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to export leads');
+        }
+    };
+
     return (
         <div>
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -300,9 +352,63 @@ export default function LeadsDashboard({
                 </div>
             ) : (
                 <>
+                    {selectedIds.size > 0 && (
+                        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-primary/20 bg-primary/10 px-5 py-3">
+                            <span className="text-sm font-bold text-primary">
+                                {selectedIds.size} selected
+                            </span>
+
+                            <select
+                                value=""
+                                onChange={(e) => e.target.value && handleBulkStatus(e.target.value)}
+                                className="rounded-xl border border-white/10 bg-surface-container px-3 py-2 text-sm font-bold text-on-surface outline-none [&>option]:bg-surface-container"
+                            >
+                                <option value="" disabled>
+                                    Set status...
+                                </option>
+                                <option value="new">New</option>
+                                <option value="contacted">Contacted</option>
+                                <option value="qualified">Qualified</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+
+                            <button
+                                onClick={handleBulkExport}
+                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-on-surface transition-colors hover:bg-white/10"
+                            >
+                                <span className="material-symbols-outlined text-base">table_chart</span>
+                                Export
+                            </button>
+
+                            <button
+                                onClick={handleBulkDelete}
+                                className="inline-flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-bold text-rose-400 transition-colors hover:bg-rose-500/20"
+                            >
+                                <span className="material-symbols-outlined text-base">delete</span>
+                                Delete
+                            </button>
+
+                            <button
+                                onClick={clearSelection}
+                                className="ml-auto text-sm font-medium text-on-surface/60 transition-colors hover:text-on-surface"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    )}
+
                     <div className="masonry-grid">
                         {leads.map((lead) => (
-                            <LeadCard key={lead.id} lead={lead} />
+                            <div key={lead.id} className="masonry-item relative">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedIds.has(lead.id)}
+                                    onChange={() => toggleSelect(lead.id)}
+                                    aria-label={`Select ${lead.full_name}`}
+                                    className="absolute left-2 top-2 z-20 h-4 w-4 cursor-pointer accent-[#6366f1]"
+                                />
+                                <LeadCard lead={lead} selected={selectedIds.has(lead.id)} />
+                            </div>
                         ))}
                     </div>
 

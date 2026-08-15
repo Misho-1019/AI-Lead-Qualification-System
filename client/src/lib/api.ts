@@ -169,3 +169,48 @@ export const exportLeadsToSheets = async () => {
 
     return response.json();
 };
+
+export const bulkUpdateStatus = async (ids: string[], status: string) => {
+    const response = await fetch(`${API_BASE_URL}/api/leads/bulk-status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, status }),
+    });
+
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message ?? 'Failed to update leads');
+    }
+
+    return response.json();
+};
+
+export const bulkDeleteLeads = async (ids: string[]) => {
+    const response = await fetch(`${API_BASE_URL}/api/leads/bulk-delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+    });
+
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message ?? 'Failed to delete leads');
+    }
+
+    return response.json();
+};
+
+export const bulkExportLeads = async (ids: string[]) => {
+    const response = await fetch(`${API_BASE_URL}/api/leads/bulk-export`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+    });
+
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+        throw new Error(result?.message ?? 'Failed to export leads to Google Sheets');
+    }
+
+    return response.json();
+};

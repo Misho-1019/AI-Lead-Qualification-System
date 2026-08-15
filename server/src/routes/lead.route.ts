@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { createLeadController, exportLeadsToSheetsController, getAllLeadsController, getLeadByIdController, getLeadStatsController, reanalyzeLeadController, sendLeadEmailController, updateLeadStatusController } from "../controllers/lead.controller";
+import { bulkDeleteController, bulkExportController, bulkUpdateStatusController, createLeadController, exportLeadsToSheetsController, getAllLeadsController, getLeadByIdController, getLeadStatsController, reanalyzeLeadController, sendLeadEmailController, updateLeadStatusController } from "../controllers/lead.controller";
 import { validateCreateLead } from "../middleware/validate-create-lead";
 import { validateUpdateLeadStatus } from "../middleware/validate-update-lead-status";
+import { validateBulkIds } from "../middleware/validate-bulk-ids";
 import leadAnalysisRoutes from "./lead-analysis.route";
 import { validateUuidParam } from "../middleware/validateUuidParam";
 import { publicLimiter } from "../middleware/rateLimiter";
@@ -13,6 +14,9 @@ router.use('/:id/analysis', validateUuidParam, leadAnalysisRoutes)
 router.get('/', getAllLeadsController)
 router.get('/stats', getLeadStatsController)
 router.post('/export-to-sheets', publicLimiter, exportLeadsToSheetsController)
+router.post('/bulk-status', publicLimiter, validateBulkIds, validateUpdateLeadStatus, bulkUpdateStatusController)
+router.post('/bulk-delete', publicLimiter, validateBulkIds, bulkDeleteController)
+router.post('/bulk-export', publicLimiter, validateBulkIds, bulkExportController)
 router.get('/:id', validateUuidParam, getLeadByIdController)
 router.post('/', publicLimiter, validateCreateLead, createLeadController);
 router.patch('/:id', validateUpdateLeadStatus, updateLeadStatusController)

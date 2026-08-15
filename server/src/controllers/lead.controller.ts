@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createLead, exportLeadsToSheet, getAllLeads, getLeadById, getLeadStats, reanalyzeLead, updateLeadStatus } from "../services/lead.service";
+import { createLead, deleteLeads, exportLeadsByIds, exportLeadsToSheet, getAllLeads, getLeadById, getLeadStats, reanalyzeLead, updateLeadStatus, updateLeadsStatus } from "../services/lead.service";
 import { sendLeadEmail } from "../services/email.service";
 import { isSheetsConfigured } from "../services/sheets.service";
 import { CreateLeadInput, UpdateLeadStatusInput } from "../types/lead.types";
@@ -134,6 +134,42 @@ export const exportLeadsToSheetsController = async (req: Request, res: Response)
         await exportLeadsToSheet();
 
         return res.status(200).json({ message: 'Leads exported to Google Sheets successfully' });
+    } catch (error) {
+        console.error('Failed to export leads to Google Sheets:', error);
+
+        return res.status(502).json({ message: 'Failed to export leads to Google Sheets' });
+    }
+}
+
+export const bulkUpdateStatusController = async (req: Request, res: Response) => {
+    const { ids, status } = req.body as { ids: string[]; status: string };
+
+    const count = await updateLeadsStatus(ids, status);
+
+    return res.status(200).json({ message: 'Leads updated successfully', data: { count } });
+}
+
+export const bulkDeleteController = async (req: Request, res: Response) => {
+    const { ids } = req.body as { ids: string[] };
+
+    const count = await deleteLeads(ids);
+
+    return res.status(200).json({ message: 'Leads deleted successfully', data: { count } });
+}
+
+export const bulkExportController = async (req: Request, res: Response) => {
+    const { ids } = req.body as { ids: string[] };
+
+    if (!isSheetsConfigured()) {
+        return res.status(200).json({
+            message: 'Google Sheets is not configured. Add GOOGLE_SHEETS_SPREADSHEET_ID and GOOGLE_SERVICE_ACCOUNT_JSON to enable export.'
+        });
+    }
+
+    try {
+        const count = await exportLeadsByIds(ids);
+
+        return res.status(200).json({ message: `${count} leads exported to Google Sheets successfully` });
     } catch (error) {
         console.error('Failed to export leads to Google Sheets:', error);
 
